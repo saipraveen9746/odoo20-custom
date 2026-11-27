@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Odoo's sale report already has an optional "#" column (Settings > Sales > Line Numbers)
+        that numbers every row, including sections and notes. Always show it, and print the
+        line's Sl. No. instead, so the PDF matches the order screen.
+    -->
+    <template id="report_saleorder_document_sl_no" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//t[@t-set='line_counter'][@t-value='1']" position="replace">
+            <t t-set="line_counter" t-value="1"/>
+        </xpath>
+        <xpath expr="//th[@name='th_line_no']" position="replace">
+            <th name="th_line_no" class="text-start" style="width: 1%; white-space: nowrap;">Sl. No.</th>
+        </xpath>
+        <xpath expr="(//td[@name='td_section_line_no'])[1]/span" position="attributes">
+            <attribute name="t-out">line.sl_no or ''</attribute>
+        </xpath>
+        <xpath expr="(//td[@name='td_section_line_no'])[2]/span" position="attributes">
+            <attribute name="t-out">line.sl_no or ''</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_note_line_no']/span" position="attributes">
+            <attribute name="t-out">line.sl_no or ''</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_combo_line_no']/span" position="attributes">
+            <attribute name="t-out">line.sl_no or ''</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_product_line_no']/span" position="attributes">
+            <attribute name="t-out">line.sl_no or ''</attribute>
+        </xpath>
+    </template>
+</odoo>
