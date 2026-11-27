@@ -1,0 +1,739 @@
+// ============================================================================
+// ERP Heritage
+// Copyright (C) 2026 (https://www.erpheritage.com.au/)
+// ============================================================================
+//
+// Dynamic report viewer - presentation polish.
+//
+// Pure styling layer on top of dynamic_report.scss: no markup, state or data
+// logic is touched. Every rule is scoped under `.eh_dr` with higher
+// specificity than the base sheet, so deleting this file restores the
+// previous look exactly.
+//
+// Design rules: one 8px spacing grid, one border colour, one radius scale
+// (6 control / 10 panel), labels in small caps-style uppercase, numbers in
+// tabular figures, and a single accent for focus.
+
+.eh_dr {
+    --eh-p-border: #E2E8F0;
+    --eh-p-border-strong: #CBD5E1;
+    --eh-p-panel: #F8FAFC;
+    --eh-p-label: #64748B;
+    --eh-p-ink: #0F172A;
+    --eh-p-radius: 6px;
+    --eh-p-radius-panel: 10px;
+    --eh-p-focus: #2563EB;
+
+    // ---- Header ---------------------------------------------------------
+    .eh_dr_topbar {
+        padding: 16px 24px 14px;
+        background: #FFFFFF;
+        border-bottom: 1px solid var(--eh-p-border);
+        box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+    }
+
+    .eh_dr_titlebar {
+        align-items: center;
+        gap: 12px 24px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .eh_dr_title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .eh_dr_title_block {
+        flex: 1 1 auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .eh_dr_subtitle {
+        gap: 8px;
+    }
+
+    .eh_dr_currency_badge,
+    .eh_dr_period_badge {
+        padding: 3px 10px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        background: var(--eh-p-panel);
+        border-color: var(--eh-p-border);
+        color: #334155;
+    }
+
+    // "Ledger: ..." caption: quiet, aligned, not floating mid-bar.
+    .eh_dr_titlebar > .small.text-muted {
+        flex: 1 1 auto;
+        align-self: center;
+        font-size: 0.78rem !important;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        padding-left: 14px;
+        border-left: 2px solid var(--eh-p-border);
+        color: var(--eh-p-label) !important;
+    }
+
+    .eh_dr_actions {
+        gap: 8px;
+
+        .btn.btn-secondary,
+        .btn.btn-primary {
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.85rem !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border-radius: var(--eh-p-radius) !important;
+            letter-spacing: 0.005em;
+        }
+
+        .eh_dr_collapse_toggle {
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 14px;
+            border-radius: var(--eh-p-radius);
+            font-weight: 600;
+
+            &:hover {
+                background: var(--eh-p-panel);
+            }
+        }
+    }
+
+    // Currency / period badges and the ledger caption repeat what the filter
+    // bar and filter panel already show, so they are hidden (markup kept).
+    .eh_dr_subtitle,
+    .eh_dr_titlebar > .small.text-muted {
+        display: none !important;
+    }
+
+
+    // Refresh is an icon-only square button.
+    .eh_dr_actions .btn.eh_dr_refresh_btn {
+        width: 34px;
+        padding: 0 !important;
+        justify-content: center;
+
+        .eh_dr_refresh_icon {
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        &:hover:not(:disabled) .eh_dr_refresh_icon {
+            transform: rotate(180deg);
+        }
+
+        &:disabled .eh_dr_refresh_icon {
+            animation: eh_dr_spin 0.9s linear infinite;
+        }
+    }
+
+
+    // ---- Export buttons (left of the title): segmented PDF | Excel -----------
+    .eh_dr_export_group {
+        display: inline-flex;
+        flex-shrink: 0;
+        height: 34px;
+        border: 1px solid var(--eh-p-border-strong);
+        border-radius: var(--eh-p-radius);
+        background: #FFFFFF;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .eh_dr_export_btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px;
+        border: 0;
+        background: transparent;
+        color: #334155;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+
+        & + & {
+            border-left: 1px solid var(--eh-p-border-strong);
+        }
+
+        svg {
+            flex-shrink: 0;
+        }
+
+        &--pdf:hover:not(:disabled) {
+            background: #FEF2F2;
+            color: #B91C1C;
+        }
+
+        &--xlsx:hover:not(:disabled) {
+            background: #F0FDF4;
+            color: #15803D;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--eh-p-focus);
+            outline-offset: -2px;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // ---- Primary filter bar -------------------------------------------
+    .eh_dr_filters {
+        gap: 12px 24px;
+        align-items: center;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+
+        // Label sits inline to the left of its control instead of above it:
+        // halves the toolbar height.
+        > .eh_dr_filter:not(.eh_dr_check) {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+
+            > span {
+                white-space: nowrap;
+                font-size: 0.68rem;
+            }
+
+            > input[type="date"],
+            > input[type="search"],
+            > input[type="text"],
+            > input[type="number"],
+            > select {
+                width: auto;
+                min-width: 0;
+                height: 34px;
+                padding: 4px 12px;
+                font-size: 0.85rem;
+            }
+
+            > select {
+                padding-right: 30px;
+                background-position: right 10px center;
+            }
+        }
+
+        > .eh_dr_filter.eh_dr_check {
+            height: 34px;
+            > span { font-size: 0.85rem; }
+        }
+    }
+
+
+    // ---- Date range pill: [cal] mode  < >  from - to -----------------------
+    .eh_dr_date_pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 36px;
+        padding: 0 6px 0 12px;
+        background: #F1F5F9;
+        border: 1px solid var(--eh-p-border);
+        border-radius: 8px;
+
+        &:focus-within {
+            border-color: var(--eh-p-focus);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+
+        .eh_dr_date_pill_icon {
+            color: #475569;
+            font-size: 1rem;
+            margin-right: 2px;
+        }
+
+        .eh_dr_date_pill_sep {
+            color: #94A3B8;
+            font-weight: 600;
+        }
+
+        // Labels are redundant inside the pill (the icon, order and tooltips
+        // carry the meaning); keep them for screen readers only.
+        .eh_dr_filter > span {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+
+        .eh_dr_filter {
+            flex-direction: row;
+            margin: 0;
+
+            > select,
+            > input[type="date"] {
+                height: 28px;
+                width: auto;
+                padding: 0 4px;
+                border: 0;
+                background-color: transparent;
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #0F172A;
+                box-shadow: none;
+
+                &:hover { background-color: #E2E8F0; }
+                &:focus { box-shadow: none; background-color: #E2E8F0; }
+            }
+
+            > select {
+                padding-right: 22px;
+                background-position: right 4px center;
+                font-weight: 600;
+            }
+
+            > input[type="date"] {
+                min-width: 0;
+                border-radius: 6px;
+                &::-webkit-calendar-picker-indicator { display: none; }
+            }
+        }
+
+        .eh_dr_period_nav {
+            height: 28px;
+            padding-left: 2px;
+            margin-right: 2px;
+            border-left: 1px solid var(--eh-p-border-strong);
+            border-right: 1px solid var(--eh-p-border-strong);
+            padding-right: 2px;
+
+            button.btn.btn-link {
+                padding: 0 2px;
+                i { font-size: 1rem; }
+            }
+        }
+    }
+
+
+    // ---- Primary-bar selects share the date pill's look ---------------------
+    .eh_dr_filters > .eh_dr_filter:not(.eh_dr_check) {
+        > select,
+        > input[type="number"],
+        > input[type="date"] {
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--eh-p-border);
+            background-color: #F1F5F9;
+            color: #0F172A;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &:hover {
+                background-color: #E2E8F0;
+            }
+
+            &:focus {
+                background-color: #F1F5F9;
+                border-color: var(--eh-p-focus);
+            }
+        }
+
+        > select {
+            padding-right: 28px;
+            background-position: right 8px center;
+            background-size: 16px 16px;
+        }
+    }
+
+    // Currency stays compact but wide enough for "Company currency".
+    .eh_dr_filters > .eh_dr_filter.eh_dr_filter_currency > select {
+        width: 150px;
+    }
+
+    // ---- Expanded filter panel ------------------------------------------
+    .eh_dr_filters_advanced {
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid var(--eh-p-border);
+        border-top: 1px solid var(--eh-p-border);
+        border-radius: var(--eh-p-radius-panel);
+        background: #FFFFFF;
+        gap: 16px;
+    }
+
+    // Each group is a tidy responsive grid: equal columns, equal gutters.
+    .eh_dr_filter_group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px 20px;
+        align-items: start;
+    }
+
+    .eh_dr_filter_group + .eh_dr_filter_group {
+        padding-top: 16px;
+        border-top: 1px solid var(--eh-p-border);
+    }
+
+    .eh_dr_axis_filters {
+        padding: 14px 16px;
+        background: var(--eh-p-panel);
+        border-color: var(--eh-p-border);
+        border-radius: var(--eh-p-radius-panel);
+    }
+
+    .eh_dr_axis_heading {
+        grid-column: 1 / -1;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--eh-p-border);
+        font-weight: 600;
+    }
+
+    // ---- Field labels and controls ----------------------------------------
+    .eh_dr_filter {
+        gap: 6px;
+        min-width: 0;
+
+        > span {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            color: var(--eh-p-label);
+        }
+
+        > input[type="date"],
+        > input[type="search"],
+        > input[type="text"],
+        > input[type="number"],
+        > select {
+            height: 34px;
+            min-width: 0;
+            width: 100%;
+            padding: 4px 10px;
+            border-color: var(--eh-p-border-strong);
+            border-radius: var(--eh-p-radius);
+            font-size: 0.85rem;
+            box-shadow: none;
+
+            &:hover {
+                border-color: #94A3B8;
+            }
+
+            &:focus {
+                border-color: var(--eh-p-focus);
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+            }
+        }
+
+        // Quick-search box that sits directly on top of a list box: join
+        // them visually into one control.
+        > input[type="search"].eh_dr_filter_search {
+            margin-bottom: -2px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            background-color: var(--eh-p-panel);
+
+            &::placeholder {
+                color: #94A3B8;
+            }
+
+            & + select[multiple] {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+        }
+
+        // Multi-select list boxes.
+        &.eh_dr_filter_wide {
+            flex: 1 1 240px;
+            min-width: 0;
+
+            > select[multiple] {
+                height: auto;
+                min-height: 96px;
+                max-height: 140px;
+                padding: 4px;
+                border: 1px solid var(--eh-p-border-strong);
+                border-radius: var(--eh-p-radius);
+                background: #FFFFFF;
+                font-size: 0.84rem;
+                line-height: 1.35;
+                overflow-y: auto;
+
+                option {
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    margin-bottom: 1px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                option:hover {
+                    background: #F1F5F9;
+                }
+
+                option:checked {
+                    background: #E0E7FF linear-gradient(0deg, #E0E7FF, #E0E7FF);
+                    color: #1E3A8A;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        &.eh_dr_check {
+            height: 34px;
+
+            > span {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #334155;
+            }
+        }
+    }
+
+    .eh_dr_more_btn {
+        align-self: flex-start;
+        padding: 0 !important;
+        margin-top: 2px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: var(--eh-p-focus) !important;
+
+        &:hover {
+            color: #1D4ED8 !important;
+            text-decoration: underline !important;
+        }
+    }
+
+    // Prev / next period arrows line up with the 34px controls.
+    .eh_dr_period_nav {
+        height: 34px;
+    }
+
+    // ---- Active filter chips ----------------------------------------------
+    .eh_dr_chips {
+        margin-top: 12px;
+        padding-top: 12px;
+        gap: 6px 8px;
+    }
+
+    .eh_dr_chips_label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+    }
+
+    .eh_dr_chip {
+        padding: 2px 4px 2px 10px;
+        font-size: 0.76rem;
+        font-weight: 500;
+        background: #EEF2FF;
+        border-color: #C7D2FE;
+        color: #1E3A8A;
+    }
+
+    .eh_dr_chip_x {
+        background: #C7D2FE;
+        color: #1E3A8A;
+
+        &:hover {
+            background: #DC2626;
+            color: #FFFFFF;
+        }
+    }
+
+    // ---- Result toolbar ---------------------------------------------------
+    .eh_dr_meta_bar {
+        padding-top: 16px;
+        margin-bottom: 12px;
+        gap: 16px;
+    }
+
+    .eh_dr_search {
+        height: 32px;
+        border-color: var(--eh-p-border-strong);
+        border-radius: var(--eh-p-radius);
+
+        &:focus-within {
+            border-color: var(--eh-p-focus);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+    }
+
+    // ---- Table ------------------------------------------------------------
+    .eh_dr_body {
+        padding: 0 24px 24px;
+    }
+
+    .eh_dr_table {
+        font-variant-numeric: tabular-nums;
+        border: 1px solid var(--eh-p-border);
+        border-radius: var(--eh-p-radius-panel);
+        overflow: clip;
+
+        // Column headings
+        thead th {
+            height: 40px;
+            padding: 0 16px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--eh-p-label);
+            background: var(--eh-p-panel);
+            border-top: 0;
+            border-bottom: 1px solid var(--eh-p-border-strong);
+        }
+
+        // Base rows: clean, airy, hairline dividers
+        tbody tr:not(.eh_dr_spacer_row) {
+            height: 36px;
+        }
+
+        tbody td {
+            padding: 6px 16px;
+            font-size: 0.86rem;
+            border-top: 1px solid #F1F5F9;
+        }
+
+        tbody tr:first-child > td {
+            border-top: 0;
+        }
+
+        tbody tr.eh_dr_data_row:hover > td {
+            background-color: #F8FAFC;
+        }
+
+        // Amount columns: right aligned, tabular, slightly heavier
+        .eh_dr_num {
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        // Fold caret: quiet, accent on hover
+        .eh_dr_unfold_caret {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 6px;
+
+            i {
+                color: #64748B;
+            }
+
+            &:hover {
+                background: #E2E8F0;
+
+                i { color: #0F172A; }
+            }
+        }
+
+        // Notes icon: only on hover, unless a note exists
+        .eh_dr_note_btn:not(.eh_dr_note_btn--has) {
+            opacity: 0;
+            transition: opacity 0.12s ease;
+        }
+
+        tbody tr:hover .eh_dr_note_btn,
+        .eh_dr_note_btn:focus-visible {
+            opacity: 1;
+        }
+
+        // Section / group headings (Assets, Liabilities, ...)
+        tbody tr.eh_dr_section_row > td {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #0F172A;
+            background-color: #F8FAFC !important;
+            border-top: 1px solid var(--eh-p-border);
+            border-bottom: 0;
+        }
+
+        tbody tr.eh_dr_section_row.eh_dr_header > td {
+            background-color: #F1F5F9 !important;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #334155;
+            border-top: 1px solid var(--eh-p-border-strong);
+            border-bottom: 0;
+        }
+
+        // Totals: single clear rule above, bold
+        tbody tr.eh_dr_section_row.eh_dr_total > td,
+        tbody tr.eh_dr_total > td {
+            background-color: #FFFFFF !important;
+            font-weight: 700;
+            color: #0F172A;
+            border-top: 1px solid #64748B;
+            border-bottom: 0;
+        }
+
+        // Computed results (Net profit, Total liabilities and equity, ...)
+        tbody tr.eh_dr_computed > td {
+            background-color: #EEF2F7 !important;
+            font-weight: 700;
+            color: #0F172A;
+            border-top: 1px solid #64748B;
+            border-bottom: 1px solid #64748B;
+        }
+
+        // Checks (Balance check): understated
+        tbody tr.eh_dr_check > td {
+            background-color: #FFFFFF !important;
+            font-style: normal;
+            font-size: 0.8rem;
+            color: var(--eh-p-label);
+            border-top: 1px dashed var(--eh-p-border-strong);
+        }
+
+        tbody tr:last-child > td {
+            border-bottom: 0;
+        }
+    }
+}
+
+// ---- Responsive -----------------------------------------------------------
+@media (max-width: 760px) {
+    .eh_dr .eh_dr_topbar {
+        padding: 14px 12px 12px;
+    }
+
+    .eh_dr .eh_dr_body {
+        padding: 0 12px 20px;
+    }
+
+    .eh_dr .eh_dr_filters,
+    .eh_dr .eh_dr_filters_advanced {
+        padding: 12px;
+    }
+
+    .eh_dr .eh_dr_filter_group {
+        grid-template-columns: 1fr;
+    }
+
+    .eh_dr .eh_dr_titlebar > .small.text-muted {
+        padding-left: 0;
+        border-left: 0;
+    }
+}
+
+@keyframes eh_dr_spin {
+    to { transform: rotate(360deg); }
+}
